@@ -14,9 +14,9 @@ services:
     expose:
       - '8090'
     volumes:
-      - ./database/pb_data:/pb_data
+      - './database/pb_data:/pb_data'
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8090/api/health || exit 1
+      test: 'wget --no-verbose --tries=1 --spider http://localhost:8090/api/health || exit 1'
       interval: 5s
       timeout: 5s
       retries: 5
@@ -32,11 +32,11 @@ services:
     environment:
       - DOCKER_MODE=true
       - PB_DIR=/pb_data
-      - PB_HOST=http://0.0.0.0:8090
+      - PB_HOST=http://db:8090
     volumes:
-      - ./database/pb_data:/pb_data
-      - ./apps:/app/apps
-      - ./locales:/app/locales
+      - './database/pb_data:/pb_data'
+      - './apps:/app/apps'
+      - './locales:/app/locales'
     depends_on:
       db:
         condition: service_healthy
@@ -56,21 +56,22 @@ services:
     expose:
       - '3636'
     volumes:
-      - ./apps:/lifeforge/apps
-      - ./locales:/lifeforge/locales
+      - './apps:/lifeforge/apps'
+      - './locales:/lifeforge/locales'
     depends_on:
       db-init:
         condition: service_completed_successfully
-client:
-  build:
-    context: .
-    dockerfile: docker/client/Dockerfile
-    args:
-      - VITE_API_HOST=/api
-  container_name: lifeforge-client
-  restart: unless-stopped
-  expose:
-    - '80'
-  depends_on:
-    server:
-      condition: service_started
+
+  client:
+    build:
+      context: .
+      dockerfile: docker/client/Dockerfile
+      args:
+        - VITE_API_HOST=/api
+    container_name: lifeforge-client
+    restart: unless-stopped
+    expose:
+      - '80'
+    depends_on:
+      server:
+        condition: service_started
