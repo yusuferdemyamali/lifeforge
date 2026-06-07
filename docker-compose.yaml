@@ -5,12 +5,13 @@ services:
       dockerfile: docker/db/Dockerfile
     container_name: lifeforge-db
     restart: unless-stopped
-    env_file:
-      - ./env/.env.docker
     environment:
       - DOCKER_MODE=true
       - PB_BINARY_PATH=/usr/local/bin/pocketbase
       - PB_DIR=/pb_data
+      - PB_EMAIL=${PB_EMAIL}
+      - PB_PASSWORD=${PB_PASSWORD}
+      - MASTER_KEY=${MASTER_KEY}
     expose:
       - '8090'
     volumes:
@@ -27,12 +28,13 @@ services:
       context: .
       dockerfile: docker/db-init/Dockerfile
     container_name: lifeforge-db-init
-    env_file:
-      - ./env/.env.docker
     environment:
       - DOCKER_MODE=true
       - PB_DIR=/pb_data
       - PB_HOST=http://db:8090
+      - PB_EMAIL=${PB_EMAIL}
+      - PB_PASSWORD=${PB_PASSWORD}
+      - MASTER_KEY=${MASTER_KEY}
     volumes:
       - './database/pb_data:/pb_data'
       - './apps:/app/apps'
@@ -47,12 +49,15 @@ services:
       dockerfile: docker/server/Dockerfile
     container_name: lifeforge-server
     restart: unless-stopped
-    env_file:
-      - ./env/.env.docker
     environment:
       - DOCKER_MODE=true
       - NODE_ENV=production
       - PB_HOST=http://db:8090
+      - PB_DIR=/pb_data
+      - PB_EMAIL=${PB_EMAIL}
+      - PB_PASSWORD=${PB_PASSWORD}
+      - MASTER_KEY=${MASTER_KEY}
+      - PORT=3636
     expose:
       - '3636'
     volumes:
